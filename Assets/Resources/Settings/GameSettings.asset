@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1ff055eed3cb403cb5ed9108140d7751, type: 3}
+  m_Name: GameSettings
+  m_EditorClassIdentifier: 
+  Gems:
+  - {fileID: 7235748328727818090, guid: d79fd99d3b76a15489062651e4106240, type: 3}
+  - {fileID: 7235748328727818090, guid: 96616892cd85c584996e0858da6fe7ed, type: 3}
+  - {fileID: 7235748328727818090, guid: 94f32f28eb7e3c347a2d6aa193261a58, type: 3}
+  - {fileID: 7235748328727818090, guid: 43db99ecd7739fa429f26cf90d02d0e6, type: 3}
+  - {fileID: 7235748328727818090, guid: 96a065c83e4d51a41a104cb1adce062c, type: 3}
+  - {fileID: 7235748328727818090, guid: 1b5c1aa750e9b9f47a0ce6ddf7d17885, type: 3}
+  - {fileID: 7235748328727818090, guid: db1a0c96f61c13a41adf4480e942be35, type: 3}
+  GridSettings:
+    Horizontal: 6
+    Vertical: 6
+  MatchTime: 120
+  StartGoal: 100
+  GoalStep: 4
