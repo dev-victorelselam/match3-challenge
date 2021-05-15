@@ -1,5 +1,4 @@
-﻿using Context;
-using Controllers.Input;
+﻿using Controllers.Input;
 using Domain;
 using UnityEngine.Events;
 
@@ -7,11 +6,12 @@ namespace Controllers.Game
 {
     public class GemSelectionController
     {
-        public UnityEvent<GemElement, GemElement> OnSelectionComplete = new UnityEvent<GemElement, GemElement>();
+        public readonly UnityEvent<GemElement, GemElement> OnSelectionComplete = new UnityEvent<GemElement, GemElement>();
+        public readonly UnityEvent<GemElement, GemElement> OnSelectionInvalid = new UnityEvent<GemElement, GemElement>();
         private readonly InputController _inputController;
         
-        private GemElement _firstClickedObject;
-        private GemElement _secondClickedObject;
+        private GemElement _firstSelectedObject;
+        private GemElement _secondSelectedObject;
 
         public GemSelectionController(InputController inputController)
         {
@@ -32,26 +32,41 @@ namespace Controllers.Game
 
         private void AssignGem(GemElement gemElement)
         {
-            if (_firstClickedObject)
+            if (_firstSelectedObject)
             {
-                if (_firstClickedObject == gemElement)
+                if (_firstSelectedObject == gemElement)
                 {
-                    _firstClickedObject = null;
+                    _firstSelectedObject = null;
                     gemElement.Unselect();
                     return;
                 }
 
-                if (_firstClickedObject.IsNeighbor(gemElement))
+                if (_firstSelectedObject.IsNeighborFrom(gemElement))
                 {
-                    _secondClickedObject = gemElement;
+                    _secondSelectedObject = gemElement;
                     gemElement.Select();
+                    
+                    OnSelectionComplete.Invoke(_firstSelectedObject, _secondSelectedObject);
+                    Clean();
+                }
+                else
+                {
+                    _secondSelectedObject = gemElement;
+                    OnSelectionInvalid?.Invoke(_firstSelectedObject, _secondSelectedObject);
+                    Clean();
                 }
             }
             else
             {
-                _firstClickedObject = gemElement;
+                _firstSelectedObject = gemElement;
                 gemElement.Select();
             }
+        }
+
+        private void Clean()
+        {
+            _firstSelectedObject = null;
+            _secondSelectedObject = null;
         }
     }
 }

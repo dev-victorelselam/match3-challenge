@@ -1,34 +1,35 @@
-﻿using Controllers;
+﻿using Controllers.Asset;
 using Controllers.Game;
 using Controllers.Input;
-using UnityEngine;
+using Controllers.Points;
+using Controllers.Sequence;
+using Domain;
 
 namespace Context
 {
     public class Context : IContext
     {
         public Environment Environment => Environment.Game;
+        public AssetLoader AssetLoader { get; }
         public GameSettings GameSettings { get; }
         public GameController GameController { get; }
         public InputController InputController { get; }
+        public ISequenceChecker SequenceChecker { get; }
+        public IPointsCalculator PointsCalculator { get; }
 
         public Context()
         {
             ContextProvider.Subscribe(this);
-
-            InputController = new InputController();
-            GameSettings = Load<GameSettings>($"Settings/{nameof(GameSettings)}");
             
-            GameController = LoadAndInstantiate<GameController>($"Controllers/{nameof(GameController)}");
-            GameController.Initialize(GameSettings, InputController);
-        }
+            AssetLoader = new AssetLoader();
+            GameSettings = AssetLoader.Load<GameSettings>($"Settings/{nameof(GameSettings)}");
+            
+            InputController = AssetLoader.LoadAndInstantiate<InputController>($"Controllers/{nameof(InputController)}");
+            PointsCalculator = new DefaultPointsCalculator();
+            SequenceChecker = new DefaultSequenceChecker(GameSettings.MinItemsCount);
 
-        private T Load<T>(string path) where T : Object => Resources.Load<T>(path);
-
-        private T LoadAndInstantiate<T>(string path) where T : Object
-        {
-            var prefab = Load<GameObject>(path);
-            return Object.Instantiate(prefab).GetComponent<T>();
+            GameController = AssetLoader.LoadAndInstantiate<GameController>($"Controllers/{nameof(GameController)}");
+            GameController.Initialize(GameSettings, SequenceChecker, InputController, PointsCalculator);
         }
     }
 }

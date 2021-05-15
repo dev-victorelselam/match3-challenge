@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Context;
+using Controllers.Game;
 using DG.Tweening;
+using Domain;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -11,30 +12,26 @@ namespace ViewUtils
 {
     public class Timer : MonoBehaviour
     {
-        public UnityEvent OnTimeEnd = new UnityEvent();
         [SerializeField] private Text _timeText;
         [SerializeField] private List<Color> _timerColors;
-    
-        public void SetTime(int timeInSeconds)
+
+        private MatchTimer _timer;
+        private Dictionary<int, Color> _colorSteps;
+
+        public void SetTime(MatchTimer timer)
         {
-            StartCoroutine(CountDown(timeInSeconds));
+            _colorSteps = GetSteps(timer.Time);
+            _timeText.color = _timerColors.Last();
+            _timer = timer;
         }
 
-        private IEnumerator CountDown(int timeInSeconds)
+        public void Update()
         {
-            var time = timeInSeconds;
-            var steps = GetSteps(timeInSeconds);
-            _timeText.color = _timerColors.Last();
+            if (_timer == null)
+                return;
             
-            while (time > 0)
-            {
-                _timeText.text = Extensions.FormatTime(time);
-                CheckTextColor(time, steps);
-                yield return new WaitForSeconds(1);
-                time--;
-            }
-        
-            OnTimeEnd.Invoke();
+            _timeText.text = Extensions.FormatTime(_timer.Time);
+            CheckTextColor(_timer.Time, _colorSteps);
         }
 
         private void CheckTextColor(int time, Dictionary<int, Color> colors)

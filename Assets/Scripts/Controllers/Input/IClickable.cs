@@ -11,11 +11,11 @@ namespace Controllers.Input
         /// <summary>
         /// Detected Mouse Down 
         /// </summary>
-        void OnMouseDown();
+        void MouseDown();
         
         /// <summary>
         /// Detected Mouse Up
         /// </summary>
-        void OnMouseUp();
+        void MouseUp();
     }
 }

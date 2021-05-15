@@ -1,6 +1,7 @@
-﻿using Controllers;
-using Controllers.Game;
-using UnityEngine;
+﻿using Controllers.Game;
+using Controllers.Input;
+using Controllers.Sequence;
+using Domain;
 
 namespace Context
 {
@@ -9,14 +10,12 @@ namespace Context
         public Environment Environment => Environment.Test;
         public GameSettings GameSettings { get; }
         public GameController GameController { get; }
+        public InputController InputController { get; }
+        public ISequenceChecker SequenceChecker { get; }
 
         public TestContext()
         {
             ContextProvider.Subscribe(this);
-            
-            GameSettings = Resources.Load<GameSettings>($"Settings/{nameof(GameSettings)}");
-            GameController = Resources.Load<GameObject>($"Controllers/{nameof(GameController)}")
-                .GetComponent<GameController>();
         }
     }
 }

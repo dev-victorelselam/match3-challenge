@@ -1,6 +1,7 @@
-﻿using Controllers;
-using Controllers.Game;
-using UnityEngine;
+﻿using Controllers.Game;
+using Controllers.Input;
+using Controllers.Sequence;
+using Domain;
 
 namespace Context
 {
@@ -9,5 +10,7 @@ namespace Context
         Environment Environment { get; }
         GameSettings GameSettings { get; }
         GameController GameController { get; }
+        InputController InputController { get; }
+        ISequenceChecker SequenceChecker { get; }
     }
 }

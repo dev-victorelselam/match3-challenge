@@ -26,3 +26,14 @@ MonoBehaviour:
   MatchTime: 120
   StartGoal: 100
   GoalStep: 4
+  MinItemsCount: 3
+  PointsPerItem: 2
+  StageMultipliers:
+  - Count: 2
+    Multiplier: 2
+  - Count: 4
+    Multiplier: 4
+  - Count: 6
+    Multiplier: 6
+  - Count: 99999
+    Multiplier: 20
