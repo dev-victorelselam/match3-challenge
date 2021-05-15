@@ -6,7 +6,6 @@ using Controllers.Points;
 using Controllers.Sequence;
 using Controllers.Sound;
 using Domain;
-using UnityEngine;
 
 namespace Context
 {
@@ -32,7 +31,8 @@ namespace Context
             SoundController = AssetLoader.LoadAndInstantiate<SoundController>($"Controllers/{nameof(SoundController)}");
             
             InputController = AssetLoader.LoadAndInstantiate<InputController>($"Controllers/{nameof(InputController)}");
-            PointsCalculator = new DefaultPointsCalculator();
+            //since this creation is in context, we can easily change to another script with another formula
+            PointsCalculator = new PointsCalculator();
             SequenceChecker = new DefaultSequenceChecker(GameSettings.MinItemsCount);
 
             GameController = AssetLoader.LoadAndInstantiate<GameController>($"Controllers/{nameof(GameController)}");

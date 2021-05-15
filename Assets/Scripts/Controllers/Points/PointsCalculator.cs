@@ -2,7 +2,7 @@
 
 namespace Controllers.Points
 {
-    public class DefaultPointsCalculator : IPointsCalculator
+    public class PointsCalculator : IPointsCalculator
     {
         public int Calculate(int elements, int minItemsCount, float pointsPerItem, float multiplier)
         {

@@ -1,4 +1,5 @@
-﻿using Controllers.Game;
+﻿using Controllers.Asset;
+using Controllers.Game;
 using Controllers.Input;
 using Controllers.LocalStorage;
 using Controllers.Points;
@@ -11,6 +12,7 @@ namespace Context
     public interface IContext
     {
         Environment Environment { get; }
+        AssetLoader AssetLoader { get; }
         GameSettings GameSettings { get; }
         GameController GameController { get; }
         InputController InputController { get; }

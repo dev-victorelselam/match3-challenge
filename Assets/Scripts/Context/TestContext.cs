@@ -1,4 +1,5 @@
-﻿using Controllers.Game;
+﻿using Controllers.Asset;
+using Controllers.Game;
 using Controllers.Input;
 using Controllers.LocalStorage;
 using Controllers.Points;
@@ -11,6 +12,7 @@ namespace Context
     public class TestContext : IContext
     {
         public Environment Environment => Environment.Test;
+        public AssetLoader AssetLoader { get; }
         public GameSettings GameSettings { get; }
         public GameController GameController { get; }
         public InputController InputController { get; }
@@ -22,6 +24,8 @@ namespace Context
         public TestContext()
         {
             ContextProvider.Subscribe(this);
+            PointsCalculator = new PointsCalculator();
+            AssetLoader = new AssetLoader();
         }
     }
 }
