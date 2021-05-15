@@ -97,7 +97,8 @@ namespace Controllers.Game
 
         private void PopulateGrid()
         {
-            _gameGrid.transform.position = new Vector3(-5, -5);
+            var gridSettings = _gameSettings.GridSettings;
+            Camera.main.transform.position = new Vector3(gridSettings.Horizontal - 1, gridSettings.Vertical, -10);
             _gems = _gridController.Populate();
         }
         
