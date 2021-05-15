@@ -159,6 +159,13 @@
         "com.unity.modules.imgui": "1.0.0"
       }
     },
+    "unity-runtime-test": {
+      "version": "https://github.com/dev-victorelselam/unity-runtime-test.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "22885e6c7b78b861344e92576d11ecfed600e3ee"
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,
