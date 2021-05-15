@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Controllers.Input;
 using Controllers.Points;
@@ -23,7 +24,7 @@ namespace Controllers.Game
         private IPointsCalculator _pointsCalculator;
         
         private GemSelectionController _gemSelectionController;
-        private GridPopulationController _gridPopulationController;
+        private GridController _gridController;
 
         public void Initialize(GameSettings gameSettings, 
             ISequenceChecker sequenceChecker,
@@ -35,78 +36,69 @@ namespace Controllers.Game
             _inputController = inputController;
             _pointsCalculator = pointsCalculator;
             _gemSelectionController = new GemSelectionController(_inputController);
-            _gridPopulationController = new GridPopulationController(_gameGrid, _gameSettings, sequenceChecker);
+            _gridController = new GridController(_gameGrid, _gameSettings, sequenceChecker);
+            
             _gemSelectionController.OnSelectionComplete.AddListener(
                 (first, second) => StartCoroutine(ChangeGemsPosition(first, second)));
             _gemSelectionController.OnSelectionInvalid.AddListener(
                 (first, second) => Debug.LogError($"Invalid!"));
+            _gridController.OnSequence.AddListener(CalculatePoints);
         }
-        
+
         public void StartGame()
         {
             var timer = new MatchTimer();
             
             ResetMatch();
-            PopulateGrid(_gameSettings.GridSettings);
+            PopulateGrid();
             
             StartCoroutine(timer.CountDown(_gameSettings.MatchTime));
             _gameHud.StartGame(this, timer);
         }
+        
+        private void ResetMatch() => _gems = _gridController.Clear(_gems);
 
-        private void PopulateGrid(GridSettings gridSettings)
+        private void PopulateGrid()
         {
-            _gems = _gridPopulationController.Populate();
-            _gameGrid.transform.position = new Vector3(-gridSettings.Horizontal + 1, gridSettings.Vertical);
+            _gameGrid.transform.position = new Vector3(-5, -5);
+            _gems = _gridController.Populate();
+            
         }
         
         private IEnumerator ChangeGemsPosition(GemElement first, GemElement second)
         {
-            var firstSnapshot = new GemSnapshot(first);
-            var secondSnapshot = new GemSnapshot(second);
+            var firstSnapshot = new GridPositionSnapshot(first);
+            var secondSnapshot = new GridPositionSnapshot(second);
 
             _inputController.Enable(false);
             
             yield return this.RunAndWait(first.Move(secondSnapshot), second.Move(firstSnapshot));
-            UpdateGrid();
+            _gems = _gridController.UpdateGrid(_gems);
 
-            //if it is a not valid move, rollback
-            if (_sequenceChecker.IsMovementValid(_gems, first, second, out var sequenceList))
-                StartCoroutine(CheckForSequences());
-            else
-                yield return this.RunAndWait(first.Move(firstSnapshot), second.Move(secondSnapshot));
+            var sequence = _sequenceChecker.IsMovementValid(_gems, first, second, out var sequenceList);
+            switch (sequence)
+            {
+                case SequenceType.None:
+                    //if it is a not valid move, rollback
+                    yield return this.RunAndWait(first.Move(firstSnapshot), second.Move(secondSnapshot));
+                    break;
+                case SequenceType.Horizontal:
+                case SequenceType.Vertical:
+                    yield return _gridController.ProcessSequence(_gems, sequenceList, sequence);
+                    _gems = _gridController.CurrentGrid; //this is not good
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             _inputController.Enable(true);
         }
-
-        private IEnumerator CheckForSequences()
-        {
-            yield return ProcessSequence(new List<IGridPosition>());
-        }
         
-        private IEnumerator ProcessSequence(List<IGridPosition> sequence)
+        private void CalculatePoints(int sequenceCount, Vector3 position)
         {
-            var points = _pointsCalculator.Calculate(sequence.Count, _gameSettings.MinItemsCount,
-                _gameSettings.PointsPerItem, _gameSettings.GetMultiplier(sequence.Count));
-            
+            var points = _pointsCalculator.Calculate(sequenceCount, _gameSettings.MinItemsCount,
+                _gameSettings.PointsPerItem, _gameSettings.GetMultiplier(sequenceCount));
             OnScoreUpdate.Invoke(points);
-            yield return null;
-            foreach (var gridItem in sequence)
-                gridItem.Remove();
-        }
-
-        private void UpdateGrid()
-        {
-            var newGrid = new IGridPosition[_gems.GetLength(0), _gems.GetLength(1)];
-            foreach (var gem in _gems)
-                newGrid[gem.X, gem.Y] = gem;
-
-            _gems = newGrid;
-        }
-
-        private void ResetMatch()
-        {
-            _gridPopulationController.Clear(_gems);
-            _gems = new IGridPosition[0, 0];
         }
     }
 }

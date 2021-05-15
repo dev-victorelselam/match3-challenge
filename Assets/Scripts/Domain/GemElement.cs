@@ -14,25 +14,23 @@ namespace Domain
 
         public GemType GemType;
 
-        public IEnumerator Move(GemSnapshot gemSnapshot)
+        public IEnumerator Move(GridPositionSnapshot gemSnapshot)
         {
-            
             yield return transform.DOMove(gemSnapshot.Position, 0.3f).SetEase(Ease.Linear).WaitForCompletion();
-            X = gemSnapshot.X;
-            Y = gemSnapshot.Y;
+            SetPosition(gemSnapshot.X, gemSnapshot.Y);
         }
-        
+
         public void SetPosition(int x, int y)
         {
             X = x;
             Y = y;
             
-            transform.position = new Vector3(x * 2, -y * 2, 0);
+            transform.position = new Vector3(x * 2, y * 2);
         }
         
         public void Remove()
         {
-            
+            Destroy(gameObject);
         }
 
         public void OnClick()

@@ -10,6 +10,12 @@ namespace Domain
 {
     public static class Extensions
     {
+        /// <summary>
+        /// Check if one gem is neighbor from other
+        /// </summary>
+        /// <param name="gemElement"></param>
+        /// <param name="otherGemElement"></param>
+        /// <returns></returns>
         public static bool IsNeighborFrom(this GemElement gemElement, GemElement otherGemElement)
         {
             if (Mathf.Abs(gemElement.X - otherGemElement.X) <= 1 && gemElement.Y - otherGemElement.Y == 0)
@@ -19,6 +25,9 @@ namespace Domain
 
             return false;
         }
+
+        public static GridPositionSnapshot GetSnapshot(this IGridPosition gridPosition) 
+            => new GridPositionSnapshot(gridPosition);
 
         public static IEnumerator RunAndWait(this MonoBehaviour monoBehaviour, params IEnumerator[] coroutines)
         {
@@ -30,11 +39,8 @@ namespace Domain
                 yield return coroutine;
         }
 
-        public static bool IsNullOrEmpty(this ICollection collection) 
-            => collection == null || collection.Count == 0;
-
-        public static T GetRandom<T>(this ICollection<T> collection)
-            => collection.ToList()[Random.Range(0, collection.Count)];
+        public static bool IsNullOrEmpty(this ICollection collection) => collection == null || collection.Count == 0;
+        public static T GetRandom<T>(this ICollection<T> collection) => collection.ToList()[Random.Range(0, collection.Count)];
 
         public static string FormatTime(int timeInSeconds)
         {
@@ -48,25 +54,65 @@ namespace Domain
         public static float GetMultiplier(this GameSettings gameSettings, int count) => 
             gameSettings.StageMultipliers.First(sm => sm.Count >= count).Multiplier;
         
-        public static GemElement GetRandomGem(this GameSettings gameSettings, Transform container) 
-            => Object.Instantiate(gameSettings.Gems[Random.Range(0, gameSettings.Gems.Length)], container);
+        /// <summary>
+        /// Instantiate random gem
+        /// </summary>
+        /// <param name="gameSettings"></param>
+        /// <param name="container"></param>
+        /// <returns></returns>
+        public static GemElement GetRandomGem(this GameSettings gameSettings, Transform container) => 
+            Object.Instantiate(gameSettings.Gems.GetRandom(), container);
+        
+        /// <summary>
+        /// Instantiate gem based on type
+        /// </summary>
+        /// <param name="gameSettings"></param>
+        /// <param name="container"></param>
+        /// <param name="gemType"></param>
+        /// <returns></returns>
         public static GemElement GetGemOfType(this GameSettings gameSettings, Transform container, GemType gemType) => 
             Object.Instantiate(gameSettings.Gems.First(g => g.GemType == gemType), container);
+        
+        /// <summary>
+        /// Instantiate gem based on id
+        /// </summary>
+        /// <param name="gameSettings"></param>
+        /// <param name="container"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static GemElement GetGemOfType(this GameSettings gameSettings, Transform container, int id) => 
             Object.Instantiate(gameSettings.Gems.First(g => g.GemType == (GemType)id), container);
 
+        /// <summary>
+        /// Get neighbors from specified position.
+        /// </summary>
+        /// <param name="grid">grid</param>
+        /// <param name="x">horizontal index</param>
+        /// <param name="y">vertical index</param>
+        /// <returns>
+        /// 0 - right
+        /// 1 - left
+        /// 2 - up
+        /// 3 - down</returns>
         public static IGridPosition[] GetNeighbors(this IGridPosition[,] grid, int x, int y)
         {
             return new[]
             {
-                grid.GetAt(x + 1, y),
-                grid.GetAt(x - 1, y),
-                grid.GetAt(x, y + 1),
-                grid.GetAt(x, y - 1),
+                grid.SafeGetAt(x + 1, y), //right
+                grid.SafeGetAt(x - 1, y), //left
+                grid.SafeGetAt(x, y + 1), //up
+                grid.SafeGetAt(x, y - 1), //down
             };
         }
 
-        public static IGridPosition GetAt(this IGridPosition[,] grid, int x, int y)
+        /// <summary>
+        /// Safe get in grid, returns null if the position is out of range
+        /// </summary>
+        /// <param name="grid">grid</param>
+        /// <param name="x">horizontal index</param>
+        /// <param name="y">vertical index</param>
+        /// <returns></returns>
+        public static IGridPosition SafeGetAt(this IGridPosition[,] grid, int x, int y)
         {
             try
             {
@@ -76,24 +122,6 @@ namespace Domain
             {
                 return null;
             }
-        }
-    }
-
-    public class GemSnapshot
-    {
-        public Vector3 Position;
-        public Vector3 EulerAngles;
-
-        public int X;
-        public int Y;
-        
-        public GemSnapshot(GemElement gemElement)
-        {
-            Position = gemElement.transform.position;
-            EulerAngles = gemElement.transform.eulerAngles;
-
-            X = gemElement.X;
-            Y = gemElement.Y;
         }
     }
 }

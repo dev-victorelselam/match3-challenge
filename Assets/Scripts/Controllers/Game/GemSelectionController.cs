@@ -34,13 +34,15 @@ namespace Controllers.Game
         {
             if (_firstSelectedObject)
             {
+                //if same object, unselect and clean
                 if (_firstSelectedObject == gemElement)
                 {
-                    _firstSelectedObject = null;
                     gemElement.Unselect();
+                    Clean();
                     return;
                 }
 
+                //if neighbor, proceed to complete selection
                 if (_firstSelectedObject.IsNeighborFrom(gemElement))
                 {
                     _secondSelectedObject = gemElement;
@@ -48,13 +50,13 @@ namespace Controllers.Game
                     
                     OnSelectionComplete.Invoke(_firstSelectedObject, _secondSelectedObject);
                     Clean();
+                    return;
                 }
-                else
-                {
-                    _secondSelectedObject = gemElement;
-                    OnSelectionInvalid?.Invoke(_firstSelectedObject, _secondSelectedObject);
-                    Clean();
-                }
+               
+                //if not neighbor, it is an invalid move
+                _secondSelectedObject = gemElement;
+                OnSelectionInvalid?.Invoke(_firstSelectedObject, _secondSelectedObject);
+                Clean();
             }
             else
             {
