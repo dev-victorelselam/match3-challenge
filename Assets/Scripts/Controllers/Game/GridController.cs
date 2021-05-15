@@ -10,20 +10,20 @@ using Object = UnityEngine.Object;
 
 namespace Controllers.Game
 {
-    public class GridController
+    public class GridController : MonoBehaviour
     {
         public readonly UnityEvent<int, Vector3> OnSequence = new UnityEvent<int, Vector3>();
-        private const float DelayBetweenProcess = 0.3f;
+        private const float DelayBetweenProcess = 0.8f;
         
-        private readonly Transform _container;
-        private readonly GameSettings _gameSettings;
-        private readonly ISequenceChecker _sequenceChecker;
+        private Transform _container;
+        private GameSettings _gameSettings;
+        private ISequenceChecker _sequenceChecker;
 
         private IGridPosition[,] _currentGrid;
+        private Coroutine _repopulateGridRoutine;
         public IGridPosition[,] CurrentGrid => _currentGrid;
 
-        public GridController(Transform container, GameSettings gameSettings, 
-            ISequenceChecker sequenceChecker)
+        public void Initialize(Transform container, GameSettings gameSettings, ISequenceChecker sequenceChecker)
         {
             _container = container;
             _gameSettings = gameSettings;
@@ -42,6 +42,12 @@ namespace Controllers.Game
             }
 
             grid = ReplaceMatches(grid);
+            var hasMove = CheckAvailableGame(grid);
+            if (!hasMove)
+            {
+                Clear(grid);
+                return Populate();
+            }
 
             return grid;
         }
@@ -66,13 +72,24 @@ namespace Controllers.Game
         {
             var neighborsTypes = grid.GetNeighbors(x, y).Where(g => g != null).Select(n => (GemType) n.Id);
             var targetType = GetAvailableType(neighborsTypes);
-            Object.Destroy(grid[x, y].Transform.gameObject);
+            Destroy(grid[x, y].Transform.gameObject);
             
             return _gameSettings.GetGemOfType(_container, targetType);
         }
 
         public IEnumerator ProcessSequence(IGridPosition[,] grid, List<IGridPosition> sequence, SequenceType type)
         {
+            //discovered that unity don't like interfaces in view components and bypass null checks
+            try
+            {
+                if (sequence.Any(s => s == null || !s.Transform))
+                    yield break;
+            }
+            catch (Exception e)
+            {
+                yield break;
+            }
+
             var snapshot = sequence.Select(s => s.GetSnapshot()).ToList();
             foreach (var gridItem in sequence)
             {
@@ -83,8 +100,9 @@ namespace Controllers.Game
             OnSequence.Invoke(sequence.Count, sequence.Last().Transform.position);
             
             //delay for process sequences
-            yield return new WaitForSeconds(DelayBetweenProcess); 
-            yield return RepopulateGrid(grid, snapshot, type);
+            yield return new WaitForSeconds(DelayBetweenProcess);
+            _repopulateGridRoutine = StartCoroutine(RepopulateGrid(grid, snapshot, type));
+            yield return _repopulateGridRoutine;
         }
 
         public IEnumerator RepopulateGrid(IGridPosition[,] grid, List<GridPositionSnapshot> sequence, SequenceType type)
@@ -105,8 +123,7 @@ namespace Controllers.Game
                             grid[i, j].SetPosition(grid[i, j].X, grid[i, j].Y - 1);
                         }
                         
-                        var neighborsTypes = grid.GetNeighbors(i, ySize - 1).Where(g => g != null).Select(n => (GemType) n.Id);
-                        grid[i, ySize - 1] = _gameSettings.GetGemOfType(_container, GetAvailableType(neighborsTypes));
+                        grid[i, ySize - 1] = _gameSettings.GetRandomGem(_container);
                         grid[i, ySize - 1].SetPosition(i, ySize - 1);
                     }
                     break;
@@ -127,10 +144,7 @@ namespace Controllers.Game
 
                     for (var i = 0; i < sequence.Count; i++)
                     {
-                        var neighborsTypes = grid.GetNeighbors(sequence.First().X, (ySize - 1) - i)
-                            .Where(g => g != null).Select(n => (GemType) n.Id);
-                        
-                        grid[sequence.First().X, (ySize - 1) - i] = _gameSettings.GetGemOfType(_container, GetAvailableType(neighborsTypes));
+                        grid[sequence.First().X, (ySize - 1) - i] = _gameSettings.GetRandomGem(_container);
                         grid[sequence.First().X, (ySize - 1) - i].SetPosition(sequence.First().X, (ySize - 1) - i);
                     }
                     break;
@@ -174,15 +188,29 @@ namespace Controllers.Game
 
         public IGridPosition[,] Clear(IGridPosition[,] grid)
         {
+            StopAllCoroutines();
+            
             if (grid.IsNullOrEmpty())
                 return grid;
             
             var hSize = grid.GetLength(0);
             var vSize = grid.GetLength(1);
-            
-            foreach (var gemElement in grid)
-                Object.Destroy(gemElement.Transform.gameObject);
 
+            foreach (var gemElement in grid)
+            {
+                try
+                {
+                    if (gemElement != null && gemElement.Transform)
+                        Destroy(gemElement.Transform.gameObject);
+                }
+                catch (Exception e)
+                {
+                }
+            }
+
+            for (int i = 0; i < _container.childCount; i++)
+                Destroy(_container.GetChild(i).gameObject);
+            
             return new IGridPosition[hSize, vSize];
         }
 
@@ -194,5 +222,7 @@ namespace Controllers.Game
 
             return values.GetRandom();
         }
+
+        public bool CheckAvailableGame(IGridPosition[,] grid) => _sequenceChecker.CheckForNextMove(grid);
     }
 }

@@ -30,5 +30,7 @@ namespace Controllers.Sequence
         /// <param name="grid"></param>
         /// <returns></returns>
         Dictionary<SequenceType, List<List<IGridPosition>>> CheckForSequence(IGridPosition[,] grid);
+
+        bool CheckForNextMove(IGridPosition[,] grid);
     }
 }

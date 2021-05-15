@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Domain;
 using UnityEngine;
@@ -83,6 +84,12 @@ namespace Controllers.Sequence
 
         private List<IGridPosition> CheckHorizontal(IGridPosition[,] grid, IGridPosition element)
         {
+            foreach (var gridPosition in grid)
+            {
+                if (gridPosition == null)
+                    return new List<IGridPosition>();
+            }
+            
             var id = element.Id;
             var list = new List<IGridPosition>();
             var validList = new List<IGridPosition>();
@@ -103,9 +110,18 @@ namespace Controllers.Sequence
 
             return validList;
         }
-        
-        private List<IGridPosition> CheckHorizontal(IGridPosition[,] grid, int column)
+
+        private List<IGridPosition> CheckHorizontal(IGridPosition[,] grid, int column, int streakCount = 0)
         {
+            foreach (var gridPosition in grid)
+            {
+                if (gridPosition == null)
+                    return new List<IGridPosition>();
+            }
+            
+            if (streakCount == 0)
+                streakCount = _streakCount;
+            
             IGridPosition lastValue = null;
             var list = new List<IGridPosition>();
             var validList = new List<IGridPosition>();
@@ -122,7 +138,7 @@ namespace Controllers.Sequence
                 if (value.Id == lastValue.Id)
                 {
                     AddValue(value);
-                    if (list.Count >= _streakCount)
+                    if (list.Count >= streakCount)
                         validList = list.ToList();
                 }
 
@@ -144,6 +160,12 @@ namespace Controllers.Sequence
             
         private List<IGridPosition> CheckVertical(IGridPosition[,] grid, IGridPosition element)
         {
+            foreach (var gridPosition in grid)
+            {
+                if (gridPosition == null)
+                    return new List<IGridPosition>();
+            }
+            
             var id = element.Id;
             var list = new List<IGridPosition>();
             var validList = new List<IGridPosition>();
@@ -165,8 +187,17 @@ namespace Controllers.Sequence
             return validList;
         }
         
-        private List<IGridPosition> CheckVertical(IGridPosition[,] grid, int line)
+        private List<IGridPosition> CheckVertical(IGridPosition[,] grid, int line, int streakCount = 0)
         {
+            foreach (var gridPosition in grid)
+            {
+                if (gridPosition == null)
+                    return new List<IGridPosition>();
+            }
+            
+            if (streakCount == 0)
+                streakCount = _streakCount;
+            
             IGridPosition lastValue = null;
             var list = new List<IGridPosition>();
             var validList = new List<IGridPosition>();
@@ -183,7 +214,7 @@ namespace Controllers.Sequence
                 if (value.Id == lastValue.Id)
                 {
                     AddValue(value);
-                    if (list.Count >= _streakCount)
+                    if (list.Count >= streakCount)
                         validList = list.ToList();
                 }
 
@@ -201,6 +232,88 @@ namespace Controllers.Sequence
                 list.Add(value);
                 lastValue = value;
             }
+        }
+
+        //this is not efficient, but I couldn't find the deterministic algorithm. 
+        public bool CheckForNextMove(IGridPosition[,] grid)
+        {
+            //check horizontal require column length
+            for (var i = 0; i < grid.GetLength(1); i++)
+            {
+                var h = CheckHorizontal(grid, i, 2);
+                for (var j = 0; j < h.Count; j++)
+                {
+                    var gridItem = h[j];
+                    var neighbors = grid.GetDiagonalNeighbors(gridItem.X, gridItem.Y);
+                    IGridPosition first;
+                    IGridPosition second;
+                    //if first, we want left diagonals
+                    if (j == 0)
+                    {
+                        first = neighbors[0];
+                        second = neighbors[1];
+                    }
+                    //if second, we want right diagonals
+                    else
+                    {
+                        first = neighbors[2];
+                        second = neighbors[3];
+                    }
+                    
+
+                    if (first != null && !h.Contains(first) && first.Id == gridItem.Id)
+                    {
+                        Debug.Log($"Available game at: X:{gridItem.X} Y: {gridItem.Y} in up!");
+                        return true;
+                    }
+
+                    if (second != null && !h.Contains(second) && second.Id == gridItem.Id)
+                    {
+                        Debug.Log($"Available game at: X:{gridItem.X} Y: {gridItem.Y} in down!");
+                        return true;
+                    }
+                }
+            }
+            
+            //check vertical require line length
+            for (var i = 0; i < grid.GetLength(0); i++)
+            {
+                var h = CheckVertical(grid, i, 2);
+                for (var j = 0; j < h.Count; j++)
+                {
+                    var gridItem = h[j];
+                    var neighbors = grid.GetDiagonalNeighbors(gridItem.X, gridItem.Y);
+                    IGridPosition first;
+                    IGridPosition second;
+                    //if first, we want down diagonals
+                    if (j == 0)
+                    {
+                        first = neighbors[1];
+                        second = neighbors[3];
+                    }
+                    //if second, we want up diagonals
+                    else
+                    {
+                        first = neighbors[0];
+                        second = neighbors[2];
+                    }
+
+                    if (first != null && !h.Contains(first) && first.Id == gridItem.Id)
+                    {
+                        Debug.Log($"Available game at: X:{gridItem.X} Y:{gridItem.Y} in left!");
+                        return true;
+                    }
+
+                    if (second != null && !h.Contains(second) && second.Id == gridItem.Id)
+                    {
+                        Debug.Log($"Available game at: X:{gridItem.X} Y:{gridItem.Y} in right!");
+                        return true;
+                    }
+                }
+            }
+
+            Debug.Log($"No available game!");
+            return false;
         }
     }
 }

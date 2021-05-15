@@ -1,10 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Events;
 
 namespace Controllers.Game
 {
-    public class MatchTimer
+    public class MatchTimer : IDisposable
     {
         public readonly UnityEvent OnTimeEnd = new UnityEvent();
         public int Time;
@@ -20,6 +21,11 @@ namespace Controllers.Game
             }
         
             OnTimeEnd.Invoke();
+        }
+
+        public void Dispose()
+        {
+            OnTimeEnd.RemoveAllListeners();
         }
     }
 }

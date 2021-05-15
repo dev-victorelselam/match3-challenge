@@ -104,6 +104,18 @@ namespace Domain
                 grid.SafeGetAt(x, y - 1), //down
             };
         }
+        
+        public static IGridPosition[] GetDiagonalNeighbors(this IGridPosition[,] grid, int x, int y)
+        {
+            return new[]
+            {
+                grid.SafeGetAt(x - 1, y + 1), //up left
+                grid.SafeGetAt(x - 1 , y - 1), //down left
+                
+                grid.SafeGetAt(x + 1, y + 1), //up right
+                grid.SafeGetAt(x + 1, y - 1), //down right
+            };
+        }
 
         /// <summary>
         /// Safe get in grid, returns null if the position is out of range

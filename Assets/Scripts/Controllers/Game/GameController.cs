@@ -32,6 +32,8 @@ namespace Controllers.Game
         
         private GemSelectionController _gemSelectionController;
         private GridController _gridController;
+        private PointsController _pointsController;
+        private MatchTimer _timer;
 
         public void Initialize(GameSettings gameSettings,
             InputController inputController,
@@ -48,7 +50,8 @@ namespace Controllers.Game
             
             _pointsCalculator = pointsCalculator;
             _gemSelectionController = new GemSelectionController(_inputController);
-            _gridController = new GridController(_gameGrid, _gameSettings, sequenceChecker);
+            _gridController = gameObject.AddComponent<GridController>();
+            _gridController.Initialize(_gameGrid, _gameSettings, sequenceChecker);
             
             _gemSelectionController.OnSelectionComplete.AddListener(
                 (first, second) => StartCoroutine(ChangeGemsPosition(first, second)));
@@ -58,21 +61,30 @@ namespace Controllers.Game
 
         public void StartGame()
         {
-            var timer = new MatchTimer();
-            var pointsController = new PointsController(_localStorage, _gameSettings, this);
-            pointsController.OnGameWin.AddListener(NextLevel);
+            _timer?.Dispose();
+            _timer = new MatchTimer();
+            _timer.OnTimeEnd.AddListener(StartGame);
             
+            _pointsController?.Dispose();
+            _pointsController = new PointsController(_localStorage, _gameSettings, this);
+            _pointsController.OnGameWin.AddListener(NextLevel);
+
+            Shuffle();
+            
+            StartCoroutine(_timer.CountDown(_gameSettings.MatchTime));
+            _gameHud.StartGame(_pointsController, _timer);
+        }
+
+        public void Shuffle()
+        {
             ResetMatch();
             PopulateGrid();
-            
-            StartCoroutine(timer.CountDown(_gameSettings.MatchTime));
-            timer.OnTimeEnd.AddListener(StartGame);
-            
-            _gameHud.StartGame(pointsController, timer);
+            _inputController.Enable(true);
         }
         
         private void ResetMatch()
         {
+            StopAllCoroutines();
             _soundController.Play(_clear);
             _gems = _gridController.Clear(_gems);
         }
@@ -110,6 +122,11 @@ namespace Controllers.Game
                 case SequenceType.Vertical:
                     _soundController.Play(_swap);
                     yield return _gridController.ProcessSequence(_gems, sequenceList, sequence);
+                    if (!_gridController.CheckAvailableGame(_gems))
+                    {
+                        Shuffle();
+                        yield break;
+                    }
                     _gems = _gridController.CurrentGrid; //this is not good
                     break;
                 default:
