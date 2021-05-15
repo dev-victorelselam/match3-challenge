@@ -20,6 +20,7 @@ MonoBehaviour:
   - {fileID: 7235748328727818090, guid: 96a065c83e4d51a41a104cb1adce062c, type: 3}
   - {fileID: 7235748328727818090, guid: 1b5c1aa750e9b9f47a0ce6ddf7d17885, type: 3}
   - {fileID: 7235748328727818090, guid: db1a0c96f61c13a41adf4480e942be35, type: 3}
+  PointsUpPrefab: {fileID: 2629988962696873350, guid: bb86e7d0e6e55b14bb2dc94c588fb1f7, type: 3}
   GridSettings:
     Horizontal: 6
     Vertical: 6

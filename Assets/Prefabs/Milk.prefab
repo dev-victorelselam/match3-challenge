@@ -59,9 +59,41 @@ PrefabInstance:
       propertyPath: m_WasSpriteAssigned
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 2474406987323630947, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2474406987323630947, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2474406987323630947, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2474406987323630947, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2474406987323630948, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
       propertyPath: m_Name
       value: Milk
+      objectReference: {fileID: 0}
+    - target: {fileID: 4893702172912399770, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: m_Size.x
+      value: 2.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 4893702172912399770, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: m_Size.y
+      value: 2.56
+      objectReference: {fileID: 0}
+    - target: {fileID: 4893702172912399770, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 33828c38678a3a24bb7a8605c180483f, type: 3}
+    - target: {fileID: 4893702172912399770, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
+      propertyPath: m_WasSpriteAssigned
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7854198768589042674, guid: b13e18fda45b2e44884f8bdee1ef79fb, type: 3}
       propertyPath: m_Size.x

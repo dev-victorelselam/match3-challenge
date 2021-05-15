@@ -38,9 +38,7 @@ namespace Controllers.Input
                     hit.collider.gameObject.GetComponent<IClickable>() != null)
                 {
                     _startMousePos = _inputProvider.MousePosition;
-
                     _clickedObject = hit.collider.gameObject.GetComponent<IClickable>();
-                    _clickedObject.MouseDown();
                 }
             }
 
@@ -52,8 +50,7 @@ namespace Controllers.Input
                     _clickedObject.OnClick();
                     OnClick?.Invoke(_clickedObject);
                 }
-
-                _clickedObject.MouseUp();
+                
                 _clickedObject = null;
             }
         }

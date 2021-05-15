@@ -6,14 +6,19 @@ namespace Domain
     [CreateAssetMenu(fileName = "New Game Settings", menuName = "Match3/GameSettings")]
     public class GameSettings : ScriptableObject
     {
+        [Header("Match Settings")]
         public GemElement[] Gems;
+        public TextMesh PointsUpPrefab;
         public GridSettings GridSettings;
         [Tooltip("Time in Seconds")] [Range(0, 1000)] public int MatchTime;
+        
+        [Header("Goal Settings")]
         [Space(10)]
         public int StartGoal;
         public int GoalStep;
-        [Space(10)] 
+        
         [Header("Sequence Settings")]
+        [Space(10)] 
         public int MinItemsCount;
         public float PointsPerItem;
         public StageMultiplier[] StageMultipliers;

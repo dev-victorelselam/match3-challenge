@@ -1,6 +1,9 @@
 ﻿using Controllers.Game;
 using Controllers.Input;
+using Controllers.LocalStorage;
+using Controllers.Points;
 using Controllers.Sequence;
+using Controllers.Sound;
 using Domain;
 
 namespace Context
@@ -12,6 +15,9 @@ namespace Context
         public GameController GameController { get; }
         public InputController InputController { get; }
         public ISequenceChecker SequenceChecker { get; }
+        public IPointsCalculator PointsCalculator { get; }
+        public LocalStorage LocalStorage { get; }
+        public SoundController SoundController { get; }
 
         public TestContext()
         {

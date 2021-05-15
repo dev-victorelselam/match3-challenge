@@ -18,7 +18,7 @@ namespace ViewUtils
         private MatchTimer _timer;
         private Dictionary<int, Color> _colorSteps;
 
-        public void SetTime(MatchTimer timer)
+        public void SetTimer(MatchTimer timer)
         {
             _colorSteps = GetSteps(timer.Time);
             _timeText.color = _timerColors.Last();
