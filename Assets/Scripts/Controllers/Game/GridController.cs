@@ -21,6 +21,8 @@ namespace Controllers.Game
         private IGridPosition[,] _currentGrid;
         private Coroutine _repopulateGridRoutine;
         public IGridPosition[,] CurrentGrid => _currentGrid;
+        
+        private IGridPosition _nextMoveElement;
 
         public void Initialize(Transform container, GameSettings gameSettings, ISequenceChecker sequenceChecker)
         {
@@ -209,6 +211,11 @@ namespace Controllers.Game
             return values.GetRandom();
         }
 
-        public bool CheckAvailableGame(IGridPosition[,] grid) => _sequenceChecker.CheckForNextMove(grid);
+        public bool CheckAvailableGame(IGridPosition[,] grid)
+        {
+            var result = _sequenceChecker.CheckForNextMove(grid, out var element);
+            _nextMoveElement = element;
+            return result;
+        }
     }
 }

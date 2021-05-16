@@ -235,7 +235,7 @@ namespace Controllers.Sequence
 
         //this is not efficient and looks like fails in some specific situation,
         //but I couldn't find the deterministic algorithm. 
-        public bool CheckForNextMove(IGridPosition[,] grid)
+        public bool CheckForNextMove(IGridPosition[,] grid, out IGridPosition availableElement)
         {
             //check horizontal require column length
             for (var i = 0; i < grid.GetLength(1); i++)
@@ -263,12 +263,14 @@ namespace Controllers.Sequence
                     if (first != null && !h.Contains(first) && first.Id == gridItem.Id)
                     {
                         Debug.Log($"Available game at: X:{gridItem.X} Y: {gridItem.Y} in up!");
+                        availableElement = first;
                         return true;
                     }
 
                     if (second != null && !h.Contains(second) && second.Id == gridItem.Id)
                     {
                         Debug.Log($"Available game at: X:{gridItem.X} Y: {gridItem.Y} in down!");
+                        availableElement = second;
                         return true;
                     }
                 }
@@ -300,18 +302,21 @@ namespace Controllers.Sequence
                     if (first != null && !h.Contains(first) && first.Id == gridItem.Id)
                     {
                         Debug.Log($"Available game at: X:{gridItem.X} Y:{gridItem.Y} in left!");
+                        availableElement = first;
                         return true;
                     }
 
                     if (second != null && !h.Contains(second) && second.Id == gridItem.Id)
                     {
                         Debug.Log($"Available game at: X:{gridItem.X} Y:{gridItem.Y} in right!");
+                        availableElement = second;
                         return true;
                     }
                 }
             }
 
             Debug.Log("No available game!");
+            availableElement = null;
             return false;
         }
     }

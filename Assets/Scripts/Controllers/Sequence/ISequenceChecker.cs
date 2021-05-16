@@ -25,12 +25,18 @@ namespace Controllers.Sequence
         SequenceType CheckForSequence(IGridPosition[,] grid, IGridPosition element, out List<IGridPosition> sequenceList);
 
         /// <summary>
-        /// 
+        /// Check for sequences in the entire grid
         /// </summary>
         /// <param name="grid"></param>
         /// <returns></returns>
         Dictionary<SequenceType, List<List<IGridPosition>>> CheckForSequence(IGridPosition[,] grid);
 
-        bool CheckForNextMove(IGridPosition[,] grid);
+        /// <summary>
+        /// Check if this game has a next available move
+        /// </summary>
+        /// <param name="grid"></param>
+        /// <param name="availableElement"></param>
+        /// <returns></returns>
+        bool CheckForNextMove(IGridPosition[,] grid, out IGridPosition availableElement);
     }
 }
