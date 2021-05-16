@@ -6,11 +6,14 @@ using Controllers.Points;
 using Controllers.Sequence;
 using Controllers.Sound;
 using Domain;
+using UnityEngine.Events;
 
 namespace Context
 {
     public interface IContext
     {
+        UnityEvent<bool> OnPause { get; }
+        
         Environment Environment { get; }
         AssetLoader AssetLoader { get; }
         GameSettings GameSettings { get; }
@@ -20,5 +23,7 @@ namespace Context
         IPointsCalculator PointsCalculator { get; }
         LocalStorage LocalStorage { get; }
         SoundController SoundController { get; }
+
+        void Pause();
     }
 }

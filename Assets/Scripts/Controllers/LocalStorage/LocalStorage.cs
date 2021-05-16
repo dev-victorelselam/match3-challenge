@@ -14,5 +14,7 @@ namespace Controllers.LocalStorage
 
         public int GetLevel() => PlayerPrefs.GetInt(LevelKey);
         public void SetLevel(int newLevel) => PlayerPrefs.SetInt(LevelKey, newLevel);
+
+        public void ClearData() => PlayerPrefs.DeleteAll();
     }
 }

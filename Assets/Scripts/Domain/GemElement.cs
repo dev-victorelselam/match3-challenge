@@ -29,10 +29,6 @@ namespace Domain
 
         public void SetPosition(int x, int y)
         {
-            //skips missing references
-            if (!this)
-                return;
-            
             X = x;
             Y = y;
             

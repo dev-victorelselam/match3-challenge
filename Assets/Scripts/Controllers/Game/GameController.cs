@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Context;
 using Controllers.Input;
 using Controllers.Points;
 using Controllers.Sequence;
@@ -34,6 +35,7 @@ namespace Controllers.Game
         private GridController _gridController;
         private PointsController _pointsController;
         private MatchTimer _timer;
+        private bool _paused;
 
         public void Initialize(GameSettings gameSettings,
             InputController inputController,
@@ -57,21 +59,31 @@ namespace Controllers.Game
                 (first, second) => StartCoroutine(ChangeGemsPosition(first, second)));
             _gemSelectionController.OnSelectionInvalid.AddListener(InvalidMove);
             _gridController.OnSequence.AddListener(CalculatePoints);
+            
+            ContextProvider.Context.OnPause.AddListener(Pause);
+        }
+
+        private void Pause(bool paused)
+        {
+            _paused = paused;
+            
+            _inputController.Enable(!_paused);
+            _timer.Pause(_paused);
         }
 
         public void StartGame()
         {
             _timer?.Dispose();
             _timer = new MatchTimer();
-            _timer.OnTimeEnd.AddListener(StartGame);
+            _timer.OnTimeEnd.AddListener(Lose);
             
             _pointsController?.Dispose();
             _pointsController = new PointsController(_localStorage, _gameSettings, this);
-            _pointsController.OnGameWin.AddListener(NextLevel);
+            _pointsController.OnGameWin.AddListener(Win);
 
             Shuffle();
-            
-            StartCoroutine(_timer.CountDown(_gameSettings.MatchTime));
+
+            _timer.CountDown(_gameSettings.MatchTime);
             _gameHud.StartGame(_pointsController, _timer);
         }
 
@@ -89,10 +101,15 @@ namespace Controllers.Game
             _gems = _gridController.Clear(_gems);
         }
 
-        private void NextLevel()
+        private void Win()
         {
             _localStorage.LevelPass();
-            StartGame();
+            _gameHud.ShowWin();
+        }
+
+        private void Lose()
+        {
+            _gameHud.ShowLose();
         }
 
         private void PopulateGrid()

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Domain;
 using UnityEngine;
@@ -234,7 +233,8 @@ namespace Controllers.Sequence
             }
         }
 
-        //this is not efficient, but I couldn't find the deterministic algorithm. 
+        //this is not efficient and looks like fails in some specific situation,
+        //but I couldn't find the deterministic algorithm. 
         public bool CheckForNextMove(IGridPosition[,] grid)
         {
             //check horizontal require column length
@@ -259,7 +259,6 @@ namespace Controllers.Sequence
                         first = neighbors[2];
                         second = neighbors[3];
                     }
-                    
 
                     if (first != null && !h.Contains(first) && first.Id == gridItem.Id)
                     {
@@ -312,7 +311,7 @@ namespace Controllers.Sequence
                 }
             }
 
-            Debug.Log($"No available game!");
+            Debug.Log("No available game!");
             return false;
         }
     }

@@ -6,7 +6,6 @@ using Controllers.Sequence;
 using Domain;
 using UnityEngine;
 using UnityEngine.Events;
-using Object = UnityEngine.Object;
 
 namespace Controllers.Game
 {
@@ -80,15 +79,8 @@ namespace Controllers.Game
         public IEnumerator ProcessSequence(IGridPosition[,] grid, List<IGridPosition> sequence, SequenceType type)
         {
             //discovered that unity don't like interfaces in view components and bypass null checks
-            try
-            {
-                if (sequence.Any(s => s == null || !s.Transform))
-                    yield break;
-            }
-            catch (Exception e)
-            {
+            if (sequence.Any(s => s == null || s.Equals(null)))
                 yield break;
-            }
 
             var snapshot = sequence.Select(s => s.GetSnapshot()).ToList();
             foreach (var gridItem in sequence)
@@ -198,14 +190,8 @@ namespace Controllers.Game
 
             foreach (var gemElement in grid)
             {
-                try
-                {
-                    if (gemElement != null && gemElement.Transform)
-                        Destroy(gemElement.Transform.gameObject);
-                }
-                catch (Exception e)
-                {
-                }
+                if (gemElement != null && !gemElement.Equals(null))
+                    Destroy(gemElement.Transform.gameObject);
             }
 
             for (int i = 0; i < _container.childCount; i++)
