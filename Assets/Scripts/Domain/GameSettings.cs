@@ -21,6 +21,7 @@ namespace Domain
         [Space(10)] 
         public int MinItemsCount;
         public float PointsPerItem;
+        public float TimeToHint = 10;
         public StageMultiplier[] StageMultipliers;
     }
 

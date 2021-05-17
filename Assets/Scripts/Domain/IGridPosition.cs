@@ -12,5 +12,6 @@ namespace Domain
 
         void SetPosition(int x, int y);
         void Remove();
+        void SetHint();
     }
 }

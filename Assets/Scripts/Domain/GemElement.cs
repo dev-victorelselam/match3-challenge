@@ -42,6 +42,11 @@ namespace Domain
             Destroy(gameObject);
         }
 
+        public void SetHint()
+        {
+            Highlight(2);
+        }
+
         public void OnClick()
         {
             //play some animation
@@ -50,9 +55,7 @@ namespace Domain
         public void Select()
         {
             ContextProvider.Context.SoundController.Play(_select);
-            
-            transform.DOScale(1.1f, 0.2f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
-            _additive.DOFade(1, 0.2f).SetEase(Ease.InOutQuad).SetLoops(-1, LoopType.Yoyo);
+            Highlight(-1);
         }
 
         public void Unselect()
@@ -70,6 +73,12 @@ namespace Domain
 
             await _image.DOColor(Color.red, 0.2f).AsyncWaitForCompletion();
             await _image.DOColor(Color.white, 0.2f).AsyncWaitForCompletion();
+        }
+
+        private void Highlight(int loops)
+        {
+            transform.DOScale(1.1f, 0.2f).SetEase(Ease.InOutQuad).SetLoops(loops, LoopType.Yoyo);
+            _additive.DOFade(1, 0.2f).SetEase(Ease.InOutQuad).SetLoops(loops, LoopType.Yoyo);
         }
     }
 }

@@ -24,6 +24,8 @@ namespace Controllers.Game
         
         private IGridPosition _nextMoveElement;
 
+        public IGridPosition NextMoveElement => _nextMoveElement;
+
         public void Initialize(Transform container, GameSettings gameSettings, ISequenceChecker sequenceChecker)
         {
             _container = container;

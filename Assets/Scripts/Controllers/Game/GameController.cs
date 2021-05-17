@@ -81,10 +81,18 @@ namespace Controllers.Game
             _pointsController = new PointsController(_localStorage, _gameSettings, this);
             _pointsController.OnGameWin.AddListener(Win);
 
+            _inputController.OnTimeToHint += ActivateHint;
+
             Shuffle();
 
             _timer.CountDown(_gameSettings.MatchTime);
             _gameHud.StartGame(_pointsController, _timer);
+        }
+
+        private void ActivateHint()
+        {
+            var element = _gridController.NextMoveElement;
+            element.SetHint();
         }
 
         public void Shuffle()

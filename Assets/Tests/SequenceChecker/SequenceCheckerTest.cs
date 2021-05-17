@@ -27,6 +27,7 @@ namespace Tests.SequenceChecker
             }
 
             public void Remove() { }
+            public void SetHint() { }
         }
 
         public void Awake()
