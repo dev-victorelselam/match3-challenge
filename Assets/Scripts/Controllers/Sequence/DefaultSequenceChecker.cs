@@ -233,8 +233,7 @@ namespace Controllers.Sequence
             }
         }
 
-        //this is not efficient and looks like fails in some specific situation,
-        //but I couldn't find the deterministic algorithm. 
+        //this is not efficient but I couldn't find the deterministic algorithm. 
         public bool CheckForNextMove(IGridPosition[,] grid, out IGridPosition availableElement)
         {
             //check horizontal require column length
@@ -247,17 +246,20 @@ namespace Controllers.Sequence
                     var neighbors = grid.GetDiagonalNeighbors(gridItem.X, gridItem.Y);
                     IGridPosition first;
                     IGridPosition second;
+                    IGridPosition sameLine;
                     //if first, we want left diagonals
                     if (j == 0)
                     {
                         first = neighbors[0];
                         second = neighbors[1];
+                        sameLine = grid.SafeGetAt(gridItem.X - 2, gridItem.Y);
                     }
                     //if second, we want right diagonals
                     else
                     {
                         first = neighbors[2];
                         second = neighbors[3];
+                        sameLine = grid.SafeGetAt(gridItem.X + 2, gridItem.Y);
                     }
 
                     if (first != null && !h.Contains(first) && first.Id == gridItem.Id)
@@ -273,6 +275,13 @@ namespace Controllers.Sequence
                         availableElement = second;
                         return true;
                     }
+                    
+                    if (sameLine != null && !h.Contains(sameLine) && sameLine.Id == gridItem.Id)
+                    {
+                        Debug.Log($"Available game at: X:{gridItem.X} Y: {gridItem.Y} in same line!");
+                        availableElement = sameLine;
+                        return true;
+                    }
                 }
             }
             
@@ -286,17 +295,20 @@ namespace Controllers.Sequence
                     var neighbors = grid.GetDiagonalNeighbors(gridItem.X, gridItem.Y);
                     IGridPosition first;
                     IGridPosition second;
+                    IGridPosition sameColumn;
                     //if first, we want down diagonals
                     if (j == 0)
                     {
                         first = neighbors[1];
                         second = neighbors[3];
+                        sameColumn = grid.SafeGetAt(gridItem.X, gridItem.Y - 2);
                     }
                     //if second, we want up diagonals
                     else
                     {
                         first = neighbors[0];
                         second = neighbors[2];
+                        sameColumn = grid.SafeGetAt(gridItem.X, gridItem.Y + 2);
                     }
 
                     if (first != null && !h.Contains(first) && first.Id == gridItem.Id)
@@ -310,6 +322,13 @@ namespace Controllers.Sequence
                     {
                         Debug.Log($"Available game at: X:{gridItem.X} Y:{gridItem.Y} in right!");
                         availableElement = second;
+                        return true;
+                    }
+                    
+                    if (sameColumn != null && !h.Contains(sameColumn) && sameColumn.Id == gridItem.Id)
+                    {
+                        Debug.Log($"Available game at: X:{gridItem.X} Y: {gridItem.Y} in same line!");
+                        availableElement = sameColumn;
                         return true;
                     }
                 }
