@@ -107,37 +107,44 @@ namespace Controllers.Game
             switch (type)
             {
                 case SequenceType.Horizontal:
+                    //from start X to end X
                     for (var i = sequence.First().X; i <= sequence.Last().X ; i++)
                     {
+                        //from start Y to first Y
                         for (var j = sequence.First().Y; j < ySize - 1; j++)
                         {
-                            var firstItem = grid[i, j + 1];
-                            var currentItem = grid[i, j];
+                            var firstItem = grid[i, j + 1]; //item upper from current
+                            var currentItem = grid[i, j]; //current
 
-                            grid[i, j] = firstItem;
-                            grid[i, j + 1] = currentItem;
-                            grid[i, j].SetPosition(grid[i, j].X, grid[i, j].Y - 1);
+                            grid[i, j] = firstItem; //current = upper
+                            grid[i, j + 1] = currentItem; //current = null, pass it to upper
+                            grid[i, j].SetPosition(grid[i, j].X, grid[i, j].Y - 1); //update position to down
                         }
                         
+                        //get upper gem that is null and fill it (update position)
                         grid[i, ySize - 1] = _gameSettings.GetRandomGem(_container);
                         grid[i, ySize - 1].SetPosition(i, ySize - 1);
                     }
                     break;
                 
                 case SequenceType.Vertical:
+                    //+1 because size != index
                     var sequenceHeight = 1 + (sequence.Last().Y - sequence.First().Y);
+                    //from start y + sequence size to first y
                     for (var i = sequence.First().Y + sequenceHeight; i <= ySize - 1; i++)
                     {
-                        var lastItem = grid[sequence.First().X, i - sequenceHeight];
-                        var currentItem = grid[sequence.First().X, i];
+                        var lastItem = grid[sequence.First().X, i - sequenceHeight]; //item down from current
+                        var currentItem = grid[sequence.First().X, i]; //current
 
-                        grid[sequence.First().X, i - sequenceHeight] = currentItem;
-                        grid[sequence.First().X, i] = lastItem;
+                        grid[sequence.First().X, i - sequenceHeight] = currentItem; //down = current
+                        grid[sequence.First().X, i] = lastItem; //current = down
                     }
 
+                    //update positions
                     for (var i = 0; i < ySize - sequenceHeight; i++)
                         grid[sequence.First().X, i].SetPosition(sequence.First().X, i);
 
+                    //fill all null spaces and update positions
                     for (var i = 0; i < sequence.Count; i++)
                     {
                         grid[sequence.First().X, (ySize - 1) - i] = _gameSettings.GetRandomGem(_container);
