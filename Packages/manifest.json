@@ -14,7 +14,7 @@
     "com.unity.textmeshpro": "3.0.6",
     "com.unity.timeline": "1.4.8",
     "com.unity.ugui": "1.0.0",
-    "unity-runtime-test": "https://github.com/dev-victorelselam/unity-runtime-test.git",
+    "unity-runtime-test": "https://github.com/victor-elselam/unity-runtime-test.git?path=/Assets/Package",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

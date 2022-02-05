@@ -179,11 +179,11 @@
       }
     },
     "unity-runtime-test": {
-      "version": "https://github.com/dev-victorelselam/unity-runtime-test.git",
+      "version": "https://github.com/victor-elselam/unity-runtime-test.git?path=/Assets/Package",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "22885e6c7b78b861344e92576d11ecfed600e3ee"
+      "hash": "8aaf5b793bd92e09db8b0b9bda4e14d1bee176b9"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
